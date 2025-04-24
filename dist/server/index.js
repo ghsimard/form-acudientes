@@ -100,42 +100,46 @@ const createEstudiantesTableQuery = `
 pool.query(createEstudiantesTableQuery)
     .then(() => console.log('estudiantes_form_submissions table created successfully'))
     .catch(err => console.error('Error creating estudiantes_form_submissions table:', err));
+// Create acudientes_form_submissions table if it doesn't exist
+const createAcudientesTableQuery = `
+  DROP TABLE IF EXISTS acudientes_form_submissions;
+  CREATE TABLE acudientes_form_submissions (
+    id SERIAL PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    institucion_educativa TEXT NOT NULL,
+    frequency_ratings5 JSONB NOT NULL,
+    frequency_ratings6 JSONB NOT NULL,
+    frequency_ratings7 JSONB NOT NULL
+  );
+`;
+pool.query(createAcudientesTableQuery)
+    .then(() => console.log('acudientes_form_submissions table created successfully'))
+    .catch(err => console.error('Error creating acudientes_form_submissions table:', err));
 // API endpoint to save form data
 app.post('/api/submit-form', async (req, res) => {
     try {
         console.log('Received form data:', req.body);
-        const { schoolName, yearsOfExperience, teachingGradesEarly, teachingGradesLate, schedule, feedbackSources, frequencyRatings5, frequencyRatings6, frequencyRatings7 } = req.body;
+        const { schoolName, frequencyRatings5, frequencyRatings6, frequencyRatings7 } = req.body;
         // Validate required fields
-        if (!schoolName || !yearsOfExperience || !schedule) {
-            throw new Error('Missing required fields');
+        if (!schoolName) {
+            throw new Error('Missing required field: schoolName');
         }
         // Validate frequency ratings
         if (!frequencyRatings5 || !frequencyRatings6 || !frequencyRatings7) {
             throw new Error('Missing frequency ratings');
         }
-        // Combine early and late grades into current_grade
-        const currentGrade = [...(teachingGradesEarly || []), ...(teachingGradesLate || [])][0] || '';
-        if (!currentGrade) {
-            throw new Error('No grade selected');
-        }
         const query = `
-      INSERT INTO estudiantes_form_submissions (
+      INSERT INTO acudientes_form_submissions (
         institucion_educativa,
-        anos_estudiando,
-        grado_actual,
-        jornada,
         frequency_ratings5,
         frequency_ratings6,
         frequency_ratings7
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      VALUES ($1, $2, $3, $4)
       RETURNING *;
     `;
         const values = [
             schoolName,
-            yearsOfExperience,
-            currentGrade,
-            schedule,
             JSON.stringify(frequencyRatings5),
             JSON.stringify(frequencyRatings6),
             JSON.stringify(frequencyRatings7)
@@ -149,11 +153,12 @@ app.post('/api/submit-form', async (req, res) => {
         });
     }
     catch (error) {
-        console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
+        console.error('Error saving form data:', error);
         res.status(500).json({
             success: false,
-            error: error instanceof Error ? error.message : 'Failed to save form response',
-            details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : null) : null
+            error: process.env.NODE_ENV === 'production'
+                ? 'Failed to save form data'
+                : error.message
         });
     }
 });

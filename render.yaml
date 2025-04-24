@@ -1,14 +1,13 @@
 services:
   - type: web
-    name: form-docentes
+    name: form-acudientes
     env: node
-    region: oregon
-    buildCommand: npm run build
-    startCommand: npm start
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 3000 
+        value: 3001
       - key: DATABASE_URL
-        sync: false  # This will be set in the Render dashboard
+        sync: false # This will be set manually in Render's dashboard
