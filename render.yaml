@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: form-acudientes
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        sync: false # This will be set manually in Render's dashboard
