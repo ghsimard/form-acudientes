@@ -1,6 +1,6 @@
 {
-  "short_name": "Encuesta Estudiantes",
-  "name": "Encuesta Estudiantes",
+  "short_name": "Encuesta Acudientes",
+  "name": "Encuesta Acudientes",
   "icons": [
     {
       "src": "favicon.svg",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#FFD700",
+  "theme_color": "#FF0000",
   "background_color": "#ffffff"
 }

@@ -6,32 +6,20 @@ import { FrequencyRatings } from './types/form';
 
 interface FormData {
   schoolName: string;
-  yearsOfExperience: string;
-  teachingGradesEarly: string[];
-  teachingGradesLate: string[];
-  schedule: string;
-  feedbackSources: string[];
+  studentGrades: string[];
   frequencyRatings5: FrequencyRatings;
   frequencyRatings6: FrequencyRatings;
   frequencyRatings7: FrequencyRatings;
-  frequencyRatings8: FrequencyRatings;
-  frequencyRatings9: FrequencyRatings;
   [key: string]: string | string[] | FrequencyRatings;
 }
 
 function App() {
   const [formData, setFormData] = useState<FormData>({
     schoolName: '',
-    yearsOfExperience: '',
-    teachingGradesEarly: [],
-    teachingGradesLate: [],
-    schedule: '',
-    feedbackSources: [],
+    studentGrades: [],
     frequencyRatings5: {},
     frequencyRatings6: {},
-    frequencyRatings7: {},
-    frequencyRatings8: {},
-    frequencyRatings9: {}
+    frequencyRatings7: {}
   });
 
   const [schoolSuggestions, setSchoolSuggestions] = useState<string[]>([]);
@@ -56,21 +44,21 @@ function App() {
     }));
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, section: 'teachingGradesEarly' | 'teachingGradesLate' | 'feedbackSources') => {
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [section]: checked 
-        ? [...prev[section], value]
-        : prev[section].filter(item => item !== value)
+      studentGrades: checked 
+        ? [...(prev.studentGrades as string[]), value]
+        : (prev.studentGrades as string[]).filter((item: string) => item !== value)
     }));
   };
 
   const handleFrequencyChange = (section: number, question: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [`frequencyRatings${section}`]: {
-        ...(prev[`frequencyRatings${section}` as keyof FormData] as FrequencyRatings),
+      [`frequencyRatings${section + 2}`]: {
+        ...(prev[`frequencyRatings${section + 2}` as keyof FormData] as FrequencyRatings),
         [question]: value
       }
     }));
@@ -86,38 +74,23 @@ function App() {
       return;
     }
 
-    if (!formData.yearsOfExperience) {
-      alert('Por favor, seleccione sus años de experiencia.');
-      return;
-    }
-
-    if (formData.teachingGradesEarly.length === 0 && formData.teachingGradesLate.length === 0) {
-      alert('Por favor, seleccione al menos un grado en el que tiene asignación de actividades de docencia.');
-      return;
-    }
-
-    if (!formData.schedule) {
-      alert('Por favor, seleccione su jornada de trabajo.');
-      return;
-    }
-
-    if (formData.feedbackSources.length === 0) {
-      alert('Por favor, seleccione al menos una fuente de retroalimentación.');
+    if (formData.studentGrades.length === 0) {
+      alert('Por favor, seleccione al menos un grado en el que se encuentra cursando el o los estudiantes que usted representa.');
       return;
     }
     
     // Check if all frequency rating questions are answered
     const validateFrequencySection = (questions: string[], sectionNumber: number) => {
       return questions.every(question => 
-        (formData[`frequencyRatings${sectionNumber}` as keyof FormData] as FrequencyRatings)[question] !== undefined
+        (formData[`frequencyRatings${sectionNumber + 2}` as keyof FormData] as FrequencyRatings)[question] !== undefined
       );
     };
 
-    const section5Complete = validateFrequencySection(frequencyQuestions5, 5);
-    const section6Complete = validateFrequencySection(frequencyQuestions6, 6);
-    const section7Complete = validateFrequencySection(frequencyQuestions7, 7);
+    const section3Complete = validateFrequencySection(frequencyQuestions5, 3);
+    const section4Complete = validateFrequencySection(frequencyQuestions6, 4);
+    const section5Complete = validateFrequencySection(frequencyQuestions7, 5);
 
-    if (!section5Complete || !section6Complete || !section7Complete) {
+    if (!section3Complete || !section4Complete || !section5Complete) {
       alert('Por favor, responda todas las preguntas de frecuencia antes de enviar el formulario.');
       return;
     }
@@ -141,16 +114,10 @@ function App() {
         // Reset form data
         setFormData({
           schoolName: '',
-          yearsOfExperience: '',
-          teachingGradesEarly: [],
-          teachingGradesLate: [],
-          schedule: '',
-          feedbackSources: [],
+          studentGrades: [],
           frequencyRatings5: {},
           frequencyRatings6: {},
-          frequencyRatings7: {},
-          frequencyRatings8: {},
-          frequencyRatings9: {}
+          frequencyRatings7: {}
         });
       } else {
         throw new Error(result.error || 'Failed to submit form');
@@ -194,7 +161,7 @@ function App() {
 
   const FrequencyMatrix = ({ questionNumber, questions, title }: { questionNumber: number; questions: string[]; title: string }) => {
     const isAnswered = (question: string) => 
-      (formData[`frequencyRatings${questionNumber}` as keyof FormData] as FrequencyRatings)[question] !== undefined;
+      (formData[`frequencyRatings${questionNumber + 2}` as keyof FormData] as FrequencyRatings)[question] !== undefined;
     
     return (
       <div className="space-y-8 mt-8">
@@ -236,7 +203,7 @@ function App() {
                           type="radio"
                           name={`frequency-${questionNumber}-${qIndex}`}
                           value={option}
-                          checked={(formData[`frequencyRatings${questionNumber}` as keyof FormData] as FrequencyRatings)[question] === option}
+                          checked={(formData[`frequencyRatings${questionNumber + 2}` as keyof FormData] as FrequencyRatings)[question] === option}
                           onChange={() => handleFrequencyChange(questionNumber, question, option)}
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                           required
@@ -279,22 +246,19 @@ function App() {
               ENCUESTA DE AMBIENTE ESCOLAR
             </h1>
             <h2 className="text-xl font-semibold text-gray-700 mt-2">
-              CUESTIONARIO PARA ESTUDIANTES
+              CUESTIONARIO PARA ACUDIENTES
             </h2>
           </div>
 
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-8">
             <p className="text-sm text-blue-700">
-              Con el objetivo de brindar información a los directivos docentes de tu Institución Educativa para que puedan identificar retos y oportunidades de mejora, el Programa Rectores Líderes Transformadores y Coordinadores Líderes Transformadores ha diseñado una encuesta de percepción sobre la comunicación, la convivencia y las prácticas pedagógicas que contribuyen a un mejor ambiente escolar en tu institución.
-            </p>
-            <p className="text-sm text-blue-700 mt-2">
-              Tus respuestas son valiosas para obtener información que le permita al rector o coordinador de tu institución mejorar su gestión.
+              Con el objetivo de brindar información a los directivos docentes que les permita identificar los retos de la Institución Educativa, el Programa Rectores Líderes Transformadores y Coordinadores Líderes Transformadores ha diseñado una encuesta de percepción sobre la comunicación, la convivencia y las prácticas pedagógicas que contribuyen a un mejor ambiente escolar en la institución donde estudian sus hijos y familiares. Sus respuestas son valiosas para obtener información que le permita mejorar la gestión al rector o coordinador de la institución.
             </p>
             <p className="text-sm text-blue-700 mt-2">
               La información recogida por medio de esta encuesta es confidencial y sólo será utilizada con fines estadísticos y de mejoramiento del mismo.
             </p>
             <p className="text-sm font-semibold text-blue-700 mt-2">
-              Por favor, responde todas las preguntas.
+              Por favor, responda todas las preguntas.
             </p>
           </div>
 
@@ -339,58 +303,36 @@ function App() {
               </div>
             </div>
 
-            {/* Years of Experience - now Years of Study */}
+            {/* Student Grades */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                2. ¿Cuántos años llevas estudiando en el colegio? <span className="text-red-600">*</span>
-              </label>
-              <div className="mt-4 space-y-4">
-                {['Menos de 1', '1', '2', '3', '4', '5', 'Más de 5'].map((year) => (
-                  <div key={year} className="flex items-center">
-                    <input
-                      type="radio"
-                      id={`year-${year}`}
-                      name="yearsOfExperience"
-                      value={year}
-                      required
-                      checked={formData.yearsOfExperience === year}
-                      onChange={handleChange}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                    />
-                    <label htmlFor={`year-${year}`} className="ml-3 block text-sm text-gray-700">
-                      {year}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Teaching Grades Combined - now Current Grade */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                3. ¿En qué grado estás actualmente? <span className="text-red-600">*</span>
+                2. ¿Qué grado se encuentra cursando el o los estudiantes que usted representa? (puede marcar más de una casilla) <span className="text-red-600">*</span>
               </label>
               <div className="mt-4 space-y-4">
                 {[
-                  '5°', '8°', '9°', '10°', '11°'
+                  'Primera infancia',
+                  'Preescolar',
+                  '1°',
+                  '2°',
+                  '3°',
+                  '4°',
+                  '5°',
+                  '6°',
+                  '7°',
+                  '8°',
+                  '9°',
+                  '10°',
+                  '11°',
+                  '12°'
                 ].map((grade) => (
                   <div key={grade} className="flex items-center">
                     <input
-                      type="radio"
+                      type="checkbox"
                       id={`grade-${grade}`}
-                      name="currentGrade"
                       value={grade}
-                      required
-                      checked={formData.teachingGradesEarly.includes(grade) || formData.teachingGradesLate.includes(grade)}
-                      onChange={(e) => {
-                        setFormData(prev => ({
-                          ...prev,
-                          teachingGradesEarly: [],
-                          teachingGradesLate: [],
-                          [e.target.checked ? 'teachingGradesLate' : 'teachingGradesEarly']: e.target.checked ? [grade] : []
-                        }));
-                      }}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      checked={formData.studentGrades.includes(grade)}
+                      onChange={handleCheckboxChange}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label htmlFor={`grade-${grade}`} className="ml-3 block text-sm text-gray-700">
                       {grade}
@@ -400,73 +342,23 @@ function App() {
               </div>
             </div>
 
-            {/* Schedule - now question 4 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                4. ¿En qué jornada tienes clases? <span className="text-red-600">*</span>
-              </label>
-              <div className="mt-4 space-y-4">
-                {['Mañana', 'Tarde', 'Noche', 'Única'].map((schedule) => (
-                  <div key={schedule} className="flex items-center">
-                    <input
-                      type="radio"
-                      id={`schedule-${schedule}`}
-                      name="schedule"
-                      value={schedule}
-                      required
-                      checked={formData.schedule === schedule}
-                      onChange={handleChange}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                    />
-                    <label htmlFor={`schedule-${schedule}`} className="ml-3 block text-sm text-gray-700">
-                      {schedule}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Feedback Sources - now question 5 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                5. ¿De quién recibe usted retroalimentación sobre su desempeño como docente? (múltiple respuesta) <span className="text-red-600">*</span>
-              </label>
-              <div className="mt-4 space-y-4">
-                {['Rector/a', 'Coordinador/a', 'Otros/as docentes', 'Acudientes', 'Estudiantes', 'Otros', 'Ninguno'].map((source) => (
-                  <div key={source} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={`feedback-${source}`}
-                      value={source}
-                      checked={formData.feedbackSources.includes(source)}
-                      onChange={(e) => handleCheckboxChange(e, 'feedbackSources')}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor={`feedback-${source}`} className="ml-3 block text-sm text-gray-700">
-                      {source}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Frequency Matrix for COMUNICACIÓN */}
             <FrequencyMatrix 
-              questionNumber={5} 
+              questionNumber={3} 
               questions={frequencyQuestions5} 
               title="COMUNICACIÓN"
             />
 
             {/* Frequency Matrix for PRÁCTICAS PEDAGÓGICAS */}
             <FrequencyMatrix 
-              questionNumber={6} 
+              questionNumber={4} 
               questions={frequencyQuestions6} 
               title="PRÁCTICAS PEDAGÓGICAS"
             />
 
             {/* Frequency Matrix for CONVIVENCIA */}
             <FrequencyMatrix 
-              questionNumber={7} 
+              questionNumber={5} 
               questions={frequencyQuestions7} 
               title="CONVIVENCIA"
             />
