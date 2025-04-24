@@ -252,10 +252,10 @@ function App() {
 
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-8">
             <p className="text-sm text-blue-700">
-              Con el objetivo de brindar información a los directivos docentes que les permita identificar los retos de la Institución Educativa, el Programa Rectores Líderes Transformadores y Coordinadores Líderes Transformadores ha diseñado una encuesta de percepción sobre la comunicación, la convivencia y las prácticas pedagógicas que contribuyen a un mejor ambiente escolar en la institución donde estudian sus hijos y familiares. Sus respuestas son valiosas para obtener información que le permita mejorar la gestión al rector o coordinador de la institución.
+              Con el propósito de brindar insumos valiosos para el mejoramiento de la gestión educativa en la Institución Educativa Monseñor Gerardo Valencia Cano, el Programa Rectores Líderes Transformadores y Coordinadores Líderes Transformadores ha diseñado una encuesta de percepción sobre la comunicación, la convivencia y las prácticas pedagógicas que contribuyen a un mejor ambiente escolar en la institución donde estudian sus hijos y familiares. Sus respuestas son valiosas para obtener información que le permita mejorar la gestión al rector o coordinador de la institución.
             </p>
             <p className="text-sm text-blue-700 mt-2">
-              La información recogida por medio de esta encuesta es confidencial y sólo será utilizada con fines estadísticos y de mejoramiento del mismo.
+              La información recogida por medio de esta encuesta es confidencial y sólo será utilizada con fines estadísticos y de mejoramiento del mismo. Por favor, responda con sinceridad.
             </p>
             <p className="text-sm font-semibold text-blue-700 mt-2">
               Por favor, responda todas las preguntas.
