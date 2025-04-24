@@ -123,9 +123,10 @@ const createAcudientesTableQuery = `
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     institucion_educativa TEXT NOT NULL,
-    frequency_ratings5 JSONB NOT NULL,
-    frequency_ratings6 JSONB NOT NULL,
-    frequency_ratings7 JSONB NOT NULL
+    grados_estudiantes TEXT[] NOT NULL,
+    Comunicacion JSONB NOT NULL,
+    Practicas_Pedagogicas JSONB NOT NULL,
+    Convivencia JSONB NOT NULL
   );
 `;
 
@@ -140,6 +141,7 @@ app.post('/api/submit-form', async (req, res) => {
 
     const {
       schoolName,
+      studentGrades,
       frequencyRatings5,
       frequencyRatings6,
       frequencyRatings7
@@ -150,6 +152,11 @@ app.post('/api/submit-form', async (req, res) => {
       throw new Error('Missing required field: schoolName');
     }
 
+    // Validate student grades
+    if (!studentGrades || !Array.isArray(studentGrades) || studentGrades.length === 0) {
+      throw new Error('Student grades must be a non-empty array');
+    }
+
     // Validate frequency ratings
     if (!frequencyRatings5 || !frequencyRatings6 || !frequencyRatings7) {
       throw new Error('Missing frequency ratings');
@@ -158,16 +165,18 @@ app.post('/api/submit-form', async (req, res) => {
     const query = `
       INSERT INTO acudientes_form_submissions (
         institucion_educativa,
-        frequency_ratings5,
-        frequency_ratings6,
-        frequency_ratings7
+        grados_estudiantes,
+        Comunicacion,
+        Practicas_Pedagogicas,
+        Convivencia
       )
-      VALUES ($1, $2, $3, $4)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
 
     const values = [
       schoolName,
+      studentGrades,
       JSON.stringify(frequencyRatings5),
       JSON.stringify(frequencyRatings6),
       JSON.stringify(frequencyRatings7)
