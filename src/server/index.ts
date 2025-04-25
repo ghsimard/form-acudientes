@@ -76,62 +76,6 @@ pool.query('SELECT NOW()')
     }
   });
 
-// Create table if it doesn't exist
-const createTableQuery = `
-  CREATE TABLE IF NOT EXISTS docentes_form_submissions (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    institucion_educativa VARCHAR(255) NOT NULL,
-    anos_como_docente VARCHAR(50) NOT NULL,
-    grados_asignados TEXT[] NOT NULL,
-    jornada VARCHAR(50) NOT NULL,
-    retroalimentacion_de TEXT[] NOT NULL,
-    frequency_ratings6 JSONB NOT NULL,
-    frequency_ratings7 JSONB NOT NULL,
-    frequency_ratings8 JSONB NOT NULL
-  );
-`;
-
-pool.query(createTableQuery)
-  .then(() => console.log('docentes_form_submissions table created successfully'))
-  .catch(err => console.error('Error creating docentes_form_submissions table:', err));
-
-// Create estudiantes_form_submissions table if it doesn't exist
-const createEstudiantesTableQuery = `
-  CREATE TABLE IF NOT EXISTS estudiantes_form_submissions (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    institucion_educativa TEXT NOT NULL,
-    anos_estudiando TEXT NOT NULL,
-    grado_actual TEXT NOT NULL,
-    jornada TEXT NOT NULL,
-    frequency_ratings5 JSONB NOT NULL,
-    frequency_ratings6 JSONB NOT NULL,
-    frequency_ratings7 JSONB NOT NULL
-  );
-`;
-
-pool.query(createEstudiantesTableQuery)
-  .then(() => console.log('estudiantes_form_submissions table created successfully'))
-  .catch(err => console.error('Error creating estudiantes_form_submissions table:', err));
-
-// Create acudientes_form_submissions table if it doesn't exist
-const createAcudientesTableQuery = `
-  CREATE TABLE IF NOT EXISTS acudientes_form_submissions (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    institucion_educativa TEXT NOT NULL,
-    grados_estudiantes TEXT[] NOT NULL,
-    comunicacion JSONB NOT NULL,
-    practicas_pedagogicas JSONB NOT NULL,
-    convivencia JSONB NOT NULL
-  );
-`;
-
-pool.query(createAcudientesTableQuery)
-  .then(() => console.log('acudientes_form_submissions table created successfully'))
-  .catch(err => console.error('Error creating acudientes_form_submissions table:', err));
-
 // API endpoint to save form data
 app.post('/api/submit-form', async (req, res) => {
   try {

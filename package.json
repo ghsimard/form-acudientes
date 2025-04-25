@@ -57,7 +57,8 @@
     "build:server": "tsc -p src/server/tsconfig.json",
     "generate-favicon": "node scripts/generate-favicon.js",
     "migrate-table": "ts-node scripts/migrate-table-name.ts",
-    "dev": "ts-node src/server/index.ts"
+    "dev": "ts-node src/server/index.ts",
+    "migrate": "ts-node src/server/migrations.ts"
   },
   "eslintConfig": {
     "extends": [
