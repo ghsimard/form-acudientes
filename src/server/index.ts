@@ -98,8 +98,7 @@ pool.query(createTableQuery)
 
 // Create estudiantes_form_submissions table if it doesn't exist
 const createEstudiantesTableQuery = `
-  DROP TABLE IF EXISTS estudiantes_form_submissions;
-  CREATE TABLE estudiantes_form_submissions (
+  CREATE TABLE IF NOT EXISTS estudiantes_form_submissions (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     institucion_educativa TEXT NOT NULL,
@@ -123,9 +122,9 @@ const createAcudientesTableQuery = `
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     institucion_educativa TEXT NOT NULL,
     grados_estudiantes TEXT[] NOT NULL,
-    Comunicacion JSONB NOT NULL,
-    Practicas_Pedagogicas JSONB NOT NULL,
-    Convivencia JSONB NOT NULL
+    comunicacion JSONB NOT NULL,
+    practicas_pedagogicas JSONB NOT NULL,
+    convivencia JSONB NOT NULL
   );
 `;
 
@@ -165,9 +164,9 @@ app.post('/api/submit-form', async (req, res) => {
       INSERT INTO acudientes_form_submissions (
         institucion_educativa,
         grados_estudiantes,
-        Comunicacion,
-        Practicas_Pedagogicas,
-        Convivencia
+        comunicacion,
+        practicas_pedagogicas,
+        convivencia
       )
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
