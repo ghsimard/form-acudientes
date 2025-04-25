@@ -118,8 +118,7 @@ pool.query(createEstudiantesTableQuery)
 
 // Create acudientes_form_submissions table if it doesn't exist
 const createAcudientesTableQuery = `
-  DROP TABLE IF EXISTS acudientes_form_submissions;
-  CREATE TABLE acudientes_form_submissions (
+  CREATE TABLE IF NOT EXISTS acudientes_form_submissions (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     institucion_educativa TEXT NOT NULL,

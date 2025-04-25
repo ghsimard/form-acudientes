@@ -104,11 +104,12 @@ function App() {
         body: JSON.stringify(formData)
       });
 
+      const result = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Failed to submit form');
+        throw new Error(result.error || 'Failed to submit form');
       }
 
-      const result = await response.json();
       if (result.success) {
         setIsSubmitted(true);
         // Reset form data
@@ -124,7 +125,7 @@ function App() {
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('Error al enviar el formulario. Por favor, intente nuevamente.');
+      alert(`Error al enviar el formulario: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   };
 
