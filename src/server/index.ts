@@ -55,7 +55,8 @@ if (!process.env.DATABASE_URL) {
 const dbConfig = {
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? {
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    sslmode: 'require'
   } : false
 };
 
@@ -153,7 +154,7 @@ app.get('/api/search-schools', async (req, res) => {
       SELECT DISTINCT TRIM(nombre_de_la_institucion_educativa_en_la_actualmente_desempena_) as school_name
       FROM rectores
       WHERE LOWER(TRIM(nombre_de_la_institucion_educativa_en_la_actualmente_desempena_)) LIKE LOWER($1)
-      LIMIT 10;
+      ORDER BY school_name;
     `;
     
     const result = await pool.query(query, [`%${searchTerm}%`]);

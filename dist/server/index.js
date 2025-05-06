@@ -64,65 +64,18 @@ pool.query('SELECT NOW()')
         process.exit(1); // Exit in production if we can't connect to the database
     }
 });
-// Create table if it doesn't exist
-const createTableQuery = `
-  CREATE TABLE IF NOT EXISTS docentes_form_submissions (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    institucion_educativa VARCHAR(255) NOT NULL,
-    anos_como_docente VARCHAR(50) NOT NULL,
-    grados_asignados TEXT[] NOT NULL,
-    jornada VARCHAR(50) NOT NULL,
-    retroalimentacion_de TEXT[] NOT NULL,
-    frequency_ratings6 JSONB NOT NULL,
-    frequency_ratings7 JSONB NOT NULL,
-    frequency_ratings8 JSONB NOT NULL
-  );
-`;
-pool.query(createTableQuery)
-    .then(() => console.log('docentes_form_submissions table created successfully'))
-    .catch(err => console.error('Error creating docentes_form_submissions table:', err));
-// Create estudiantes_form_submissions table if it doesn't exist
-const createEstudiantesTableQuery = `
-  DROP TABLE IF EXISTS estudiantes_form_submissions;
-  CREATE TABLE estudiantes_form_submissions (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    institucion_educativa TEXT NOT NULL,
-    anos_estudiando TEXT NOT NULL,
-    grado_actual TEXT NOT NULL,
-    jornada TEXT NOT NULL,
-    frequency_ratings5 JSONB NOT NULL,
-    frequency_ratings6 JSONB NOT NULL,
-    frequency_ratings7 JSONB NOT NULL
-  );
-`;
-pool.query(createEstudiantesTableQuery)
-    .then(() => console.log('estudiantes_form_submissions table created successfully'))
-    .catch(err => console.error('Error creating estudiantes_form_submissions table:', err));
-// Create acudientes_form_submissions table if it doesn't exist
-const createAcudientesTableQuery = `
-  DROP TABLE IF EXISTS acudientes_form_submissions;
-  CREATE TABLE acudientes_form_submissions (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    institucion_educativa TEXT NOT NULL,
-    frequency_ratings5 JSONB NOT NULL,
-    frequency_ratings6 JSONB NOT NULL,
-    frequency_ratings7 JSONB NOT NULL
-  );
-`;
-pool.query(createAcudientesTableQuery)
-    .then(() => console.log('acudientes_form_submissions table created successfully'))
-    .catch(err => console.error('Error creating acudientes_form_submissions table:', err));
 // API endpoint to save form data
 app.post('/api/submit-form', async (req, res) => {
     try {
         console.log('Received form data:', req.body);
-        const { schoolName, frequencyRatings5, frequencyRatings6, frequencyRatings7 } = req.body;
+        const { schoolName, studentGrades, frequencyRatings5, frequencyRatings6, frequencyRatings7 } = req.body;
         // Validate required fields
         if (!schoolName) {
             throw new Error('Missing required field: schoolName');
+        }
+        // Validate student grades
+        if (!studentGrades || !Array.isArray(studentGrades) || studentGrades.length === 0) {
+            throw new Error('Student grades must be a non-empty array');
         }
         // Validate frequency ratings
         if (!frequencyRatings5 || !frequencyRatings6 || !frequencyRatings7) {
@@ -131,15 +84,17 @@ app.post('/api/submit-form', async (req, res) => {
         const query = `
       INSERT INTO acudientes_form_submissions (
         institucion_educativa,
-        frequency_ratings5,
-        frequency_ratings6,
-        frequency_ratings7
+        grados_estudiantes,
+        comunicacion,
+        practicas_pedagogicas,
+        convivencia
       )
-      VALUES ($1, $2, $3, $4)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
         const values = [
             schoolName,
+            studentGrades,
             JSON.stringify(frequencyRatings5),
             JSON.stringify(frequencyRatings6),
             JSON.stringify(frequencyRatings7)
@@ -170,7 +125,7 @@ app.get('/api/search-schools', async (req, res) => {
       SELECT DISTINCT TRIM(nombre_de_la_institucion_educativa_en_la_actualmente_desempena_) as school_name
       FROM rectores
       WHERE LOWER(TRIM(nombre_de_la_institucion_educativa_en_la_actualmente_desempena_)) LIKE LOWER($1)
-      LIMIT 10;
+      ORDER BY school_name;
     `;
         const result = await pool.query(query, [`%${searchTerm}%`]);
         res.json(result.rows.map(row => row.school_name));

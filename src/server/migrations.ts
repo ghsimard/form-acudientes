@@ -12,7 +12,8 @@ if (!process.env.DATABASE_URL) {
 const dbConfig = {
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? {
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    sslmode: 'require'
   } : false
 };
 
