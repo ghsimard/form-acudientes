@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config();
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3005;
 // Debug environment
 console.log('Environment:', {
     NODE_ENV: process.env.NODE_ENV,
@@ -47,7 +47,8 @@ if (!process.env.DATABASE_URL) {
 const dbConfig = {
     connectionString: process.env.DATABASE_URL,
     ssl: process.env.NODE_ENV === 'production' ? {
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        sslmode: 'require'
     } : false
 };
 console.log('Database config:', {

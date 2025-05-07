@@ -1,5 +1,5 @@
 {
-  "name": "form-docentes",
+  "name": "form-acudientes",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,6 +11,7 @@
     "@craco/craco": "^7.1.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@headlessui/react": "^2.2.2",
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
     "@testing-library/jest-dom": "^5.17.0",
@@ -44,21 +45,22 @@
   },
   "scripts": {
     "start": "node dist/server/index.js",
-    "start:dev": "react-scripts start",
+    "start:dev": "PORT=3004 react-scripts start",
     "prebuild": "npm install",
     "build": "react-scripts build && tsc -p src/server/tsconfig.json && tsc -p scripts/tsconfig.json",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "ts-node src/server/index.ts",
+    "server": "PORT=3005 ts-node --esm src/server/index.ts",
     "import-rectores": "ts-node src/server/importRectores.ts",
     "convert-types": "ts-node src/server/convertDataTypes.ts",
     "deploy": "bash scripts/deploy.sh",
-    "prod:server": "NODE_ENV=production node dist/server/index.js",
+    "prod:server": "NODE_ENV=production PORT=3005 ts-node --esm src/server/index.ts",
     "build:server": "tsc -p src/server/tsconfig.json",
     "generate-favicon": "node scripts/generate-favicon.js",
     "migrate-table": "ts-node scripts/migrate-table-name.ts",
-    "dev": "ts-node src/server/index.ts",
-    "migrate": "ts-node src/server/migrations.ts"
+    "dev": "PORT=3005 ts-node src/server/index.ts",
+    "migrate": "ts-node --esm src/server/migrations.ts",
+    "start:prod": "node dist/server/index.js"
   },
   "eslintConfig": {
     "extends": [

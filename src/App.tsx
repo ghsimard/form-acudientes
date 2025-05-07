@@ -137,8 +137,8 @@ function App() {
     setSchoolSuggestions([]);
     setShowSuggestions(false);
 
-    // Only fetch new suggestions if we have 2 or more characters
-    if (value.length >= 2) {
+    // Only fetch new suggestions if we have 3 or more characters
+    if (value.length >= 3) {
       try {
         const response = await fetch(`/api/search-schools?q=${encodeURIComponent(value)}`);
         if (response.ok) {
@@ -285,7 +285,7 @@ function App() {
                 />
                 {showSuggestions && 
                  schoolSuggestions.length > 0 && 
-                 formData.schoolName.length >= 2 && (
+                 formData.schoolName.length >= 3 && (
                   <div
                     ref={dropdownRef}
                     className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm"

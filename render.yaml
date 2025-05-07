@@ -3,11 +3,17 @@ services:
     name: form-acudientes
     env: node
     buildCommand: npm install && npm run build
-    startCommand: npm run start
+    startCommand: npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 3001
       - key: DATABASE_URL
-        sync: false # This will be set manually in Render's dashboard
+        fromDatabase:
+          name: COSMO_RLT_db
+          property: connectionString
+
+databases:
+  - name: COSMO_RLT_db
+    databaseName: form_acudientes
+    user: form_acudientes_user
+    plan: free
